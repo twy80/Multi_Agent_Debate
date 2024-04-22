@@ -506,16 +506,16 @@ def set_tools() -> None:
     st.write("")
     st.write("**Tools**")
     if st.session_state.tavily_api_validity:
-        tool_options = ["Search", "arXiv", "Retrieval"]
+        tool_options = ["Search", "ArXiv", "Retrieval"]
         search = TavilySearchResults()
         tool_dictionary = {
             "Search": search,
-            "arXiv": arxiv,
+            "ArXiv": arxiv,
         }
     else:
         tool_options = ["arXiv", "Retrieval"]
         tool_dictionary = {
-            "arXiv": arxiv,
+            "ArXiv": arxiv,
         }
 
     st.session_state.selected_tools = st.multiselect(
@@ -801,9 +801,10 @@ def conclude_debate() -> None:
     moderator_llm = ChatOpenAI(
         model=st.session_state.model, temperature=0.2
     )
-    st.session_state.conclusions = moderator_llm.invoke(
-        moderator_prompt
-    ).content
+    with st.spinner("Moderator is thinking..."):
+        st.session_state.conclusions = moderator_llm.invoke(
+            moderator_prompt
+        ).content
 
     st.session_state.conversations.append(
         f"Moderator: {st.session_state.conclusions}"
@@ -908,6 +909,7 @@ def multi_agent_debate() -> None:
                     no need to enter your Tavily Search API key.
                     """
                 )
+                st.image("files/Streamlit_Debate_App.png")
                 st.info(
                     """
                     This app is coded by T.-W. Yoon, a professor of systems theory at
