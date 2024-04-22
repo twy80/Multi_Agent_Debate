@@ -543,17 +543,13 @@ def set_debate() -> None:
     descriptions of the participants, and the questions for the debate.
     """
 
-    sample_topic = (
-        "The current impact of automation and "
-        "artificial intelligence on employment."
-    )
     st.write("**Topic of the debate**")
     st.session_state.topic = st.text_input(
         label="topic of the debate",
-        placeholder=sample_topic,
+        placeholder="Enter your topic",
         label_visibility="collapsed",
     )
-    if not st.session_state.topic.endswith("."):
+    if st.session_state.topic and st.session_state.topic[-1] not in (".", "?"):
         st.session_state.topic += "."
 
     st.write(
