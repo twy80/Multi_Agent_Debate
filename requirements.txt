@@ -1,4 +1,3 @@
-openai
 streamlit
 langchain
 langchain-openai
@@ -8,3 +7,4 @@ docx2txt
 faiss-cpu
 tiktoken
 tavily-python
+arxiv
