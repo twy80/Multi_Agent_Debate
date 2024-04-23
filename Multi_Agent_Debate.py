@@ -563,7 +563,7 @@ def set_debate() -> None:
         value=st.session_state.topic,
         label_visibility="collapsed",
     )
-    st.session_state.topic = topic
+    st.session_state.topic = topic.strip()
     st.write(
         "**Language** "
         "<small>used by the debaters</small>",
