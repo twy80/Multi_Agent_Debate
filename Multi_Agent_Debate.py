@@ -118,6 +118,17 @@ def check_api_keys() -> None:
     st.session_state.ready = False
 
 
+def append_period(text: str) -> str:
+    """
+    Append a '.' to the input text
+    if it is nonempty and does not end with '.' or '?'.
+    """
+
+    if text and text[-1] not in (".", "?"):
+        text += "."
+    return text
+
+
 def get_vector_store(uploaded_files: List[UploadedFile]) -> "FAISS":
     """
     Take a list of UploadedFile objects as input,
@@ -435,15 +446,17 @@ def get_participant_names(topic: str) -> List[str]:
     """
 
     participants = ["positive", "negative"]
-
     participant_names = []
+
     for participant in participants:
         ex = "AI alarmist" if participant == "negative" else "AI accelerationist"
         name_specifier_prompt = [
             SystemMessage(content="You are a helpful moderator for a debate."),
             HumanMessage(
                 content=(
-                    f"For the {participant} perspective on the topic '{topic}', "
+                    "Here is the topic of conversation: "
+                    f"{append_period(topic)}\n"
+                    f"For the {participant} perspective on the topic, "
                     "write a name in three words or less. Start the name "
                     "with a capital letter and do not use ':' .\n"
                     "For example, for the topic 'The current impact of "
@@ -544,14 +557,13 @@ def set_debate() -> None:
     """
 
     st.write("**Topic of the debate**")
-    st.session_state.topic = st.text_input(
+    topic = st.text_input(
         label="topic of the debate",
         placeholder="Enter your topic",
+        value=st.session_state.topic,
         label_visibility="collapsed",
     )
-    if st.session_state.topic and st.session_state.topic[-1] not in (".", "?"):
-        st.session_state.topic += "."
-
+    st.session_state.topic = topic
     st.write(
         "**Language** "
         "<small>used by the debaters</small>",
@@ -593,7 +605,7 @@ def set_debate() -> None:
 
     if st.button("Suggest names for the debaters"):
         st.session_state.positive, st.session_state.negative = (
-            get_participant_names(st.session_state.topic)
+            get_participant_names(topic)
         )
 
     left, right = st.columns(2)
@@ -619,7 +631,7 @@ def set_debate() -> None:
     }
     conversation_description = (
         "Here is the topic of conversation: "
-        f"{st.session_state.topic}\nThe participants are: "
+        f"{append_period(topic)}\nThe participants are: "
         f"{' and '.join(st.session_state.names.keys())}."
     )
 
@@ -661,7 +673,7 @@ def set_debate() -> None:
                 HumanMessage(
                     content=(
                         "Here is the topic of conversation: "
-                        f"{st.session_state.topic}\n\n"
+                        f"{append_period(topic)}\n"
                         "You are the moderator.\n"
                         "Please make the topic more specific.\n"
                         "Please reply with the specified quest in "
@@ -991,9 +1003,15 @@ def multi_agent_debate() -> None:
             if left.button(f"{label_debate}"):
                 run_simulator(no_of_rounds, st.session_state.simulator)
                 st.rerun()
-            if right.button("Conclude the debate$\,$"):
-                conclude_debate()
-                st.rerun()
+            if st.session_state.conversations:
+                if right.button("Conclude the debate$\,$"):
+                    conclude_debate()
+                    st.rerun()
+            else:
+                if right.button("$~\:$Back to the setting$~\:$"):
+                    st.session_state.new_debate = True
+                    st.rerun()
+
         left.download_button(
             label="Download the debate",
             data=st.session_state.complete_conversations,
