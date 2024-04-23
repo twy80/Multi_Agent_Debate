@@ -114,7 +114,10 @@ def is_tavily_api_key_valid(tavily_api_key: str) -> None:
 
 
 def check_api_keys() -> None:
-    # Unset this flag to check the validity of the OpenAI API key
+    """
+    Unset this flag to check the validity of the OpenAI API key.
+    """
+
     st.session_state.ready = False
 
 
