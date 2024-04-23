@@ -7,8 +7,6 @@
     have a sufficient context window. Your OpenAI API key is required to run this code.
     You can obtain an API key from https://platform.openai.com/account/api-keys.
 
-  - Temperature is fixed at 0.2.
-
   - Supported tools include Tavily Search, ArXiv, and retrieval (RAG).
     * To use Tavily Search, you need a Tavily API key that can be obtained
       [here](https://app.tavily.com/).
@@ -16,6 +14,10 @@
   - Tracing LLM messages is possible using LangSmith if you download the source code
     and run it on your machine or server. For this, you need a
     LangChain API key that can be obtained [here](https://smith.langchain.com/settings).
+
+  - When running the code on your machine or server, you can use st.secrets to keep and
+    fetch your API keys as environments variables. For such secrets management, see
+    [this page](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/secrets-management)
 
 * This page is written in Python using the Streamlit framework.
 
