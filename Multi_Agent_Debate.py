@@ -403,7 +403,7 @@ def generate_agent_description(
             )
         ),
     ]
-    agent_specifier_llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0.2)
+    agent_specifier_llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=1.0)
     agent_description = agent_specifier_llm.invoke(agent_specifier_prompt)
 
     return agent_description.content
@@ -469,7 +469,7 @@ def get_participant_names(topic: str) -> List[str]:
             ),
         ]
         name_specifier_llm = ChatOpenAI(
-            model="gpt-3.5-turbo", temperature=0.2
+            model="gpt-3.5-turbo", temperature=1.0
         )
         participant_name = name_specifier_llm.invoke(
             name_specifier_prompt
@@ -686,7 +686,7 @@ def set_debate() -> None:
                 ),
             ]
             topic_specifier_llm = ChatOpenAI(
-                model="gpt-3.5-turbo", temperature=0.2
+                model="gpt-3.5-turbo", temperature=1.0
             )
             st.session_state.specified_topic = topic_specifier_llm.invoke(
                 topic_specifier_prompt
