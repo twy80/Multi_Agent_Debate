@@ -17,7 +17,7 @@
 
   - When running the code on your machine or server, you can use st.secrets to keep and
     fetch your API keys as environments variables. For such secrets management, see
-    [this page](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/secrets-management)
+    [this page](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/secrets-management).
 
 * This page is written in Python using the Streamlit framework.
 
