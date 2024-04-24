@@ -19,7 +19,8 @@
     fetch your API keys as environments variables. For such secrets management, see
     [this page](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/secrets-management).
 
-* The code here is based on the article ['Agent 2 Agent Conversations'](https://cobusgreyling.medium.com/two-llm-based-autonomous-agents-debate-each-other-e13e0a54429b).
+* The main idea in this code is based on the article
+  ['Agent 2 Agent Conversations'](https://cobusgreyling.medium.com/two-llm-based-autonomous-agents-debate-each-other-e13e0a54429b).
 
 ## Usage
 ```python
