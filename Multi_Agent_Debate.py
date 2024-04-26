@@ -661,6 +661,13 @@ def set_debate() -> None:
             )
             st.session_state.agent_descriptions[name] = agent_descriptions[name]
 
+        keys_to_delete = [
+            key for key in st.session_state.agent_descriptions
+            if key not in st.session_state.names
+        ]
+        for key in keys_to_delete:
+            del st.session_state.agent_descriptions[key]
+
         for name in st.session_state.names.keys():
             agent_system_messages[name] = generate_system_message(
                 name,
