@@ -424,10 +424,17 @@ def generate_system_message(
     Generate the system message for a participant.
     """
 
+    if description:
+        description_statement = (
+            f"Your description is as follows: {description}\n\n"
+        )
+    else:
+        description_statement = ""
+
     generated_system_message = (
         f"{conversation_description}\n\n"
         f"Your name is '{name}'.\n\n"
-        f"Your description is as follows: {description}\n\n"
+        f"{description_statement}"
         "Your goal is to persuade your conversation partner "
         "of your point of view.\n\n"
         "DO look up information with your tool "
