@@ -597,7 +597,7 @@ def set_debate() -> None:
         label="description_word_limit",
         min_value=10,
         max_value=500,
-        value=50,
+        value=20,
         step=10,
         label_visibility="collapsed"
     )
@@ -608,7 +608,7 @@ def set_debate() -> None:
         label="answer_word_limit",
         min_value=50,
         max_value=2000,
-        value=200,
+        value=100,
         step=50,
         label_visibility="collapsed"
     )
@@ -809,8 +809,8 @@ def conclude_debate() -> None:
                 "Your goal is to provide a comprehensive summary "
                 "highlighting the key points raised by each participant, "
                 "and then to conclude the debate in a productive manner. "
-                "If there is a standout in terms of being more persuasive "
-                "or convincing, mention this in your conclusion."
+                "If there is a clear standout in terms of being more "
+                "persuasive or convincing, mention this in your conclusion."
             )
         ),
         HumanMessage(
