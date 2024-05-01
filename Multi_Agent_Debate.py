@@ -83,6 +83,9 @@ def initialize_session_state_variables() -> None:
     if "conclusions" not in st.session_state:
         st.session_state.conclusions = ""
 
+    if "comments_key" not in st.session_state:
+        st.session_state.comments_key = 0
+
 
 def is_openai_api_key_valid(openai_api_key: str) -> None:
     """
@@ -244,7 +247,7 @@ class DialogueAgent:
         self.name = name
         self.system_message = system_message
         self.llm = llm
-        self.prefix = f"\n{self.name}: "
+        self.prefix = f"{self.name}: "
         self.tools = tools
         self.reset()
 
@@ -291,7 +294,7 @@ class DialogueAgent:
         """
         Concatenate {message} spoken by {name} into message history
         """
-        self.message_history.append(f"{name}: {message}")
+        self.message_history.append(f"{name}: {message}\n")
 
 
 class DialogueSimulator:
@@ -305,7 +308,7 @@ class DialogueSimulator:
         selection_function: Callable[[int, List[DialogueAgent]], int],
     ) -> None:
         self.agents = agents
-        self._step = -1
+        self._step = 0
         self.select_next_speaker = selection_function
 
     def reset(self):
@@ -320,7 +323,7 @@ class DialogueSimulator:
             agent.receive(name, message)
 
         # increment time
-        self._step += 1
+        # self._step += 1
 
     def step(self) -> tuple[str, str]:
         # 1. choose the next speaker
@@ -517,6 +520,7 @@ def reset_debate() -> None:
     st.session_state.retriever_tool = None
     st.session_state.vector_store_message = ""
     st.session_state.conclusions = ""
+    st.session_state.comments_key = 0
 
 
 def set_tools() -> None:
@@ -738,14 +742,12 @@ def set_debate() -> None:
                 agents=agents, selection_function=select_next_speaker
             )
             st.session_state.simulator.reset()
-            st.session_state.simulator.inject(
-                "Moderator", specified_topic + "\n"
-            )
+            st.session_state.simulator.inject("Moderator", specified_topic)
             st.session_state.new_debate = False
             st.rerun()
 
 
-def print_topic_debaters_questions() -> None:
+def print_topic_debaters_questions() -> str:
     """
     Print the topic, the names and descriptions of the participants,
     and questions for the debate.
@@ -1014,6 +1016,24 @@ def multi_agent_debate() -> None:
                 step=1,
                 label_visibility="collapsed",
             )
+
+        if st.session_state.conversations and not st.session_state.conclusions:
+            st.write("**Facilitative comments by the (human) moderator** (Optional)")
+            facilitative_comments = st.text_input(
+                label="facilitative_comments",
+                value="",
+                key="comments" + str(st.session_state.comments_key),
+                label_visibility="collapsed",
+            )
+            if facilitative_comments:
+                st.session_state.simulator.inject("Moderator", facilitative_comments)
+                st.session_state.conversations.append(
+                    f"Moderator: {facilitative_comments}"
+                )
+                st.session_state.conversations4print.append(
+                    f"**Moderator**: {facilitative_comments}"
+                )
+                st.session_state.comments_key += 1
 
         left, right = st.columns(2)
         if not st.session_state.conclusions:
