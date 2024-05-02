@@ -18,7 +18,8 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
 from langchain.tools.retriever import create_retriever_tool
-from langchain.agents import create_tool_calling_agent
+from langchain.agents import create_openai_tools_agent
+# from langchain.agents import create_tool_calling_agent
 from langchain.agents import AgentExecutor
 from langchain.agents import load_tools
 from tavily import TavilyClient
@@ -269,7 +270,7 @@ class DialogueAgent:
         agent_prompt = ChatPromptTemplate.from_messages(agent_prompt_list)
 
         if self.tools:
-            agent = create_tool_calling_agent(
+            agent = create_openai_tools_agent(
                 self.llm, self.tools, agent_prompt
             )
             agent_executor = AgentExecutor(
