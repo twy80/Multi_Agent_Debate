@@ -94,7 +94,7 @@ class MySearchToolInput(BaseModel):
     query: str = Field(description="search query to look up")
 
 
-def is_openai_api_key_valid(openai_api_key: str) -> None:
+def is_openai_api_key_valid(openai_api_key: str) -> bool:
     """
     Return True if the given OpenAI API key is valid.
     """
@@ -109,7 +109,11 @@ def is_openai_api_key_valid(openai_api_key: str) -> None:
     return response.status_code == 200
 
 
-def is_bing_subscription_key_valid(bing_subscription_key):
+def is_bing_subscription_key_valid(bing_subscription_key: str) -> bool:
+    """
+    Return True if the given Bing subscription key is valid.
+    """
+
     try:
         bing_search = BingSearchAPIWrapper(
             bing_subscription_key=bing_subscription_key,
@@ -909,6 +913,7 @@ def multi_agent_debate() -> None:
             bing_subscription_key = st.text_input(
                 label="$\\textsf{Your Bing Subscription Key}$",
                 type="password",
+                value="",
                 on_change=check_api_keys,
                 label_visibility="collapsed",
             )
@@ -951,9 +956,9 @@ def multi_agent_debate() -> None:
 
                     Get an OpenAI API Key [here](https://platform.openai.com/api-keys)
                     and a Bing Subscription Key [here](https://portal.azure.com/).
-                    You can also follow instructions at
+                    You can also follow instructions on
                     [this site](https://levelup.gitconnected.com/api-tutorial-how-to-use-bing-web-search-api-in-python-4165d5592a7e)
-                    to get your Bing Subscription Key. If you do not want to search
+                    to get your Bing Subscription Key. If you do not plan to search
                     the internet, there is no need to enter your Bing Subscription key.
                     """
                 )
