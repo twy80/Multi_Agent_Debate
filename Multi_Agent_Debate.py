@@ -4,25 +4,27 @@ Multi-Agent Debate (by T.-W. Yoon, Mar. 2024)
 
 import os, requests, datetime
 import streamlit as st
+from functools import partial
 from tempfile import NamedTemporaryFile
 from typing import List, Callable, Literal
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_community.utilities import BingSearchAPIWrapper
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.document_loaders import Docx2txtLoader
 from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
+from langchain.tools import Tool
 from langchain.tools.retriever import create_retriever_tool
 from langchain.agents import create_openai_tools_agent
 # from langchain.agents import create_tool_calling_agent
 from langchain.agents import AgentExecutor
 from langchain.agents import load_tools
-from tavily import TavilyClient
+from langchain.pydantic_v1 import BaseModel, Field
 
 
 def initialize_session_state_variables() -> None:
@@ -33,8 +35,8 @@ def initialize_session_state_variables() -> None:
     if "ready" not in st.session_state:
         st.session_state.ready = False
 
-    if "tavily_api_validity" not in st.session_state:
-        st.session_state.tavily_api_validity = False
+    if "bing_subscription_validity" not in st.session_state:
+        st.session_state.bing_subscription_validity = False
 
     if "langchain_api_validity" not in st.session_state:
         st.session_state.langchain_api_validity = False
@@ -88,6 +90,10 @@ def initialize_session_state_variables() -> None:
         st.session_state.comments_key = 0
 
 
+class MySearchToolInput(BaseModel):
+    query: str = Field(description="search query to look up")
+
+
 def is_openai_api_key_valid(openai_api_key: str) -> None:
     """
     Return True if the given OpenAI API key is valid.
@@ -103,18 +109,18 @@ def is_openai_api_key_valid(openai_api_key: str) -> None:
     return response.status_code == 200
 
 
-def is_tavily_api_key_valid(tavily_api_key: str) -> None:
-    """
-    Return True if the given Tavily Search API key is valid.
-    """
-
+def is_bing_subscription_key_valid(bing_subscription_key):
     try:
-        tavily = TavilyClient(api_key=tavily_api_key)
-        tavily.search(query="where can I get a Tavily search API key?")
+        bing_search = BingSearchAPIWrapper(
+            bing_subscription_key=bing_subscription_key,
+            bing_search_url="https://api.bing.microsoft.com/v7.0/search",
+            k=1
+        )
+        bing_search.run("Where can I get a Bing subscription key?")
     except:
         return False
-
-    return True
+    else:
+        return True
 
 
 def check_api_keys() -> None:
@@ -527,21 +533,31 @@ def reset_debate() -> None:
 def set_tools() -> None:
     """
     Set the tools for the agents. Tools that can be selected are
-    tavily_search, arxiv, and retrieval.
+    bing_search, arxiv, and retrieval.
     """
 
     arxiv = load_tools(["arxiv"])[0]
     st.write("")
     st.write("**Tools**")
-    if st.session_state.tavily_api_validity:
+    if st.session_state.bing_subscription_validity:
+        search = BingSearchAPIWrapper()
+        bing_search = Tool(
+            name="bing_search",
+            description=(
+                "A search engine for comprehensive, accurate, and trusted results. "
+                "Useful for when you need to answer questions about current events. "
+                "Input should be a search query."
+            ),
+            func=partial(search.results, num_results=5),
+            args_schema=MySearchToolInput,
+        )
         tool_options = ["Search", "ArXiv", "Retrieval"]
-        search = TavilySearchResults()
         tool_dictionary = {
-            "Search": search,
+            "Search": bing_search,
             "ArXiv": arxiv,
         }
     else:
-        tool_options = ["arXiv", "Retrieval"]
+        tool_options = ["ArXiv", "Retrieval"]
         tool_dictionary = {
             "ArXiv": arxiv,
         }
@@ -844,7 +860,7 @@ def conclude_debate() -> None:
 
 def multi_agent_debate() -> None:
     """
-    Let two agents, equipped with tools such as tavily search, arxiv,
+    Let two agents, equipped with tools such as bing search, arxiv,
     and retriever, debate on a given topic. The debate can be concluded
     with a remark and be downloaded.
     """
@@ -871,7 +887,7 @@ def multi_agent_debate() -> None:
             validity = "(Verified)" if st.session_state.ready else ""
             st.write(
                 "**OpenAI API Key** ",
-                f"$~~~$<small>:blue[{validity}]</small>",
+                f"<small>:blue[{validity}]</small>",
                 unsafe_allow_html=True
             )
             openai_api_key = st.text_input(
@@ -881,23 +897,25 @@ def multi_agent_debate() -> None:
                 on_change=check_api_keys,
                 label_visibility="collapsed",
             )
-            validity = "(Verified)" if st.session_state.tavily_api_validity else ""
+            if st.session_state.bing_subscription_validity:
+                validity = "(Verified)"
+            else:
+                validity = ""
             st.write(
-                "**Tavily Search Key** ",
-                f"$\:\!$<small>:blue[{validity}]</small>",
+                "**Bing Subscription Key** ",
+                f"<small>:blue[{validity}]</small>",
                 unsafe_allow_html=True
             )
-            tavily_api_key = st.text_input(
-                label="$\\textsf{Your Tavily API Key}$",
+            bing_subscription_key = st.text_input(
+                label="$\\textsf{Your Bing Subscription Key}$",
                 type="password",
-                placeholder="tvly-",
                 on_change=check_api_keys,
                 label_visibility="collapsed",
             )
             authentication = True
         else:
             openai_api_key = st.secrets["OPENAI_API_KEY"]
-            tavily_api_key = st.secrets["TAVILY_API_KEY"]
+            bing_subscription_key = st.secrets["BING_SUBSCRIPTION_KEY"]
             langchain_api_key = st.secrets["LANGCHAIN_API_KEY"]
             stored_pin = st.secrets["USER_PIN"]
             st.write("**Password**")
@@ -913,28 +931,30 @@ def multi_agent_debate() -> None:
                 st.session_state.ready = True
 
                 if choice_api == "My keys":
-                    os.environ["TAVILY_API_KEY"] = tavily_api_key
-                    st.session_state.tavily_api_validity = True
+                    os.environ["BING_SUBSCRIPTION_KEY"] = bing_subscription_key
+                    st.session_state.bing_subscription_validity = True
                     os.environ["LANGCHAIN_API_KEY"] = langchain_api_key
                     current_date = datetime.datetime.now().date()
                     date_string = str(current_date)
                     os.environ["LANGCHAIN_PROJECT"] = "agent_debate_" + date_string
                 else:
-                    if is_tavily_api_key_valid(tavily_api_key):
-                        os.environ["TAVILY_API_KEY"] = tavily_api_key
-                        st.session_state.tavily_api_validity = True
+                    if is_bing_subscription_key_valid(bing_subscription_key):
+                        os.environ["BING_SUBSCRIPTION_KEY"] = bing_subscription_key
+                        st.session_state.bing_subscription_validity = True
                     else:
-                        st.session_state.tavily_api_validity = False
+                        st.session_state.bing_subscription_validity = False
                 st.rerun()
             else:
                 st.info(
                     """
-                    **Enter your OpenAI and Tavily Search API keys in the sidebar**
+                    **Enter your OpenAI and Bing Subscription Keys in the sidebar**
 
-                    Get an OpenAI API key [here](https://platform.openai.com/api-keys)
-                    and a Tavily Search API key [here](https://app.tavily.com/).
-                    If you do not want to use Tavily Search for searching the internet,
-                    no need to enter your Tavily Search API key.
+                    Get an OpenAI API Key [here](https://platform.openai.com/api-keys)
+                    and a Bing Subscription Key [here](https://portal.azure.com/).
+                    You can also follow instructions at
+                    [this site](https://levelup.gitconnected.com/api-tutorial-how-to-use-bing-web-search-api-in-python-4165d5592a7e)
+                    to get your Bing Subscription Key. If you do not want to search
+                    the internet, there is no need to enter your Bing Subscription key.
                     """
                 )
                 st.image("files/Streamlit_Debate_App.png")
