@@ -1092,7 +1092,7 @@ def multi_agent_debate() -> None:
         st.write("---")
         st.write(
             "<small>**T.-W. Yoon**, Mar. 2024  \n</small>",
-            "<small>[LangChain OpenAI Agent](https://langchain-openai-agent.streamlit.app/)  \n</small>",
+            "<small>[LangChain LLM Agent](https://langchain-llm-agent.streamlit.app/)  \n</small>",
             "<small>[OpenAI Assistants](https://assistants.streamlit.app/)  \n</small>",
             "<small>[TWY's Playground](https://twy-playground.streamlit.app/)  \n</small>",
             "<small>[Differential equations](https://diff-eqn.streamlit.app/)</small>",
