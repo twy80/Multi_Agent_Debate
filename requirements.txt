@@ -1,7 +1,6 @@
 streamlit
 langchain
 langchain-openai
-langchain_community
 langsmith
 pypdf
 docx2txt
