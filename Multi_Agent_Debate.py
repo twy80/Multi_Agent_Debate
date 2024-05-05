@@ -945,7 +945,10 @@ def multi_agent_debate() -> None:
                     date_string = str(current_date)
                     os.environ["LANGCHAIN_PROJECT"] = "agent_debate_" + date_string
                 else:
-                    if is_bing_subscription_key_valid(bing_subscription_key):
+                    if (
+                        bing_subscription_key and
+                        is_bing_subscription_key_valid(bing_subscription_key)
+                    ):
                         os.environ["BING_SUBSCRIPTION_KEY"] = bing_subscription_key
                         st.session_state.bing_subscription_validity = True
                     else:
