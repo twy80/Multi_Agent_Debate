@@ -8,8 +8,10 @@
     You can obtain an API key from https://platform.openai.com/account/api-keys.
 
   - Supported tools include Tavily Search, ArXiv, and retrieval (RAG).
-    * To use Tavily Search, you need a Tavily API key that can be obtained
-      [here](https://app.tavily.com/).
+    * To use Bing Search, you need a Bing Subscription Key that can be obtained
+      [here](https://portal.azure.com/). You can also follow instructions on
+      [this site](https://levelup.gitconnected.com/api-tutorial-how-to-use-bing-web-search-api-in-python-4165d5592a7e)
+      to get your Bing Subscription Key.
 
   - Tracing LLM messages is possible using LangSmith if you download the source code
     and run it on your machine or server. For this, you need a
