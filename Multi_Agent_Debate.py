@@ -543,8 +543,11 @@ def set_tools() -> None:
     """
 
     arxiv = load_tools(["arxiv"])[0]
-    st.write("")
-    st.write("**Tools**")
+    wikipedia = load_tools(["wikipedia"])[0]
+
+    tool_options = ["ArXiv", "Wikipedia", "Retrieval"]
+    tool_dictionary = {"ArXiv": arxiv, "Wikipedia": wikipedia}
+
     if st.session_state.bing_subscription_validity:
         search = BingSearchAPIWrapper()
         bing_search = Tool(
@@ -557,21 +560,22 @@ def set_tools() -> None:
             func=partial(search.results, num_results=5),
             args_schema=MySearchToolInput,
         )
-        tool_options = ["Search", "ArXiv", "Retrieval"]
-        tool_dictionary = {
-            "Search": bing_search,
-            "ArXiv": arxiv,
-        }
-    else:
-        tool_options = ["ArXiv", "Retrieval"]
-        tool_dictionary = {
-            "ArXiv": arxiv,
-        }
+        tool_options.insert(0, "Search")
+        tool_dictionary["Search"] = bing_search
 
+    st.write("")
+    st.write("**Tools**")
     st.session_state.selected_tools = st.multiselect(
         label="agent tools",
         options=tool_options,
         label_visibility="collapsed",
+    )
+    st.write(
+        "<small>To search the internet, obtain your Bing Subscription Key "
+        "[here](https://portal.azure.com/) and enter it in the sidebar. "
+        "Once entered, 'Search' will be displayed in the list of tools "
+        "below.</small>",
+        unsafe_allow_html=True,
     )
 
     if "Retrieval" in st.session_state.selected_tools:
