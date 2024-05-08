@@ -572,10 +572,10 @@ def set_tools() -> None:
     )
     if "Search" not in tool_options:
         st.write(
-            "<small>To search the internet, obtain your Bing Subscription Key "
-            "[here](https://portal.azure.com/) and enter it in the sidebar. "
-            "Once entered, 'Search' will be displayed in the list of tools "
-            "below.</small>",
+            "<small>To search the internet, obtain your Bing Subscription "
+            "Key [here](https://portal.azure.com/) and enter it in the "
+            "sidebar. Once entered, 'Search' will be displayed in the "
+            "list of tools.</small>",
             unsafe_allow_html=True,
         )
     if "Retrieval" in st.session_state.selected_tools:
