@@ -570,14 +570,14 @@ def set_tools() -> None:
         options=tool_options,
         label_visibility="collapsed",
     )
-    st.write(
-        "<small>To search the internet, obtain your Bing Subscription Key "
-        "[here](https://portal.azure.com/) and enter it in the sidebar. "
-        "Once entered, 'Search' will be displayed in the list of tools "
-        "below.</small>",
-        unsafe_allow_html=True,
-    )
-
+    if "Search" not in tool_options:
+        st.write(
+            "<small>To search the internet, obtain your Bing Subscription Key "
+            "[here](https://portal.azure.com/) and enter it in the sidebar. "
+            "Once entered, 'Search' will be displayed in the list of tools "
+            "below.</small>",
+            unsafe_allow_html=True,
+        )
     if "Retrieval" in st.session_state.selected_tools:
         # Get the retriever tool and save it to st.session_state.retriever_tool.
         get_retriever()
