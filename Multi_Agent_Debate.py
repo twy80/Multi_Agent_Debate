@@ -6,7 +6,7 @@ import os, requests, datetime
 import streamlit as st
 from functools import partial
 from tempfile import NamedTemporaryFile
-from typing import List, Callable, Literal
+from typing import List, Callable, Literal, Optional
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
@@ -90,10 +90,6 @@ def initialize_session_state_variables() -> None:
         st.session_state.comments_key = 0
 
 
-class MySearchToolInput(BaseModel):
-    query: str = Field(description="search query to look up")
-
-
 def is_openai_api_key_valid(openai_api_key: str) -> bool:
     """
     Return True if the given OpenAI API key is valid.
@@ -148,7 +144,7 @@ def append_period(text: str) -> str:
     return text
 
 
-def get_vector_store(uploaded_files: List[UploadedFile]) -> "FAISS":
+def get_vector_store(uploaded_files: List[UploadedFile]) -> Optional[FAISS]:
     """
     Take a list of UploadedFile objects as input,
     and return a FAISS vector store.
@@ -541,6 +537,9 @@ def set_tools() -> None:
     Set the tools for the agents. Tools that can be selected are
     bing_search, arxiv, and retrieval.
     """
+
+    class MySearchToolInput(BaseModel):
+        query: str = Field(description="search query to look up")
 
     arxiv = load_tools(["arxiv"])[0]
     wikipedia = load_tools(["wikipedia"])[0]
