@@ -880,7 +880,7 @@ def multi_agent_debate() -> None:
     initialize_session_state_variables()
 
     # LLM for the debate
-    st.session_state.model = "gpt-4-turbo-preview"
+    st.session_state.model = "gpt-4o"
 
     with st.sidebar:
         st.write("")
