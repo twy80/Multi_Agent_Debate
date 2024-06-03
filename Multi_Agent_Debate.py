@@ -793,7 +793,7 @@ def print_topic_debaters_questions() -> str:
     )
     agent_descriptions = st.session_state.agent_descriptions
     dict_name = "agent_descriptions"
-    for name in agent_descriptions.keys():
+    for name in st.session_state.names.keys():
         st.write(f"**Description for {name}**")
         st.info(agent_descriptions[name])
 
