@@ -190,7 +190,9 @@ def get_vector_store(uploaded_files: List[UploadedFile]) -> Optional[FAISS]:
             )
             doc = text_splitter.split_documents(documents)
             # Create a FAISS vector database.
-            embeddings = OpenAIEmbeddings()
+            embeddings = OpenAIEmbeddings(
+                model="text-embedding-3-large", dimensions=1536
+            )
             vector_store = FAISS.from_documents(doc, embeddings)
     except Exception as e:
         vector_store = None
