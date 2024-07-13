@@ -876,7 +876,16 @@ def multi_agent_debate() -> None:
     with a remark and be downloaded.
     """
 
-    st.write("## 📚 Multi-Agent Debate")
+    page_title = "Multi-Agent Debate"
+    page_icon = "📚"
+
+    st.set_page_config(
+        page_title=page_title,
+        page_icon=page_icon,
+        layout="centered"
+    )
+
+    st.write(f"## {page_icon} $\,${page_title}")
 
     # Initialize all the session state variables
     initialize_session_state_variables()
