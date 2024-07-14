@@ -1008,7 +1008,7 @@ def multi_agent_debate() -> None:
                 horizontal=True
             )
             os.environ["LANGCHAIN_TRACING_V2"] = (
-                "True" if langsmith == "On" else "False"
+                "true" if langsmith == "On" else "false"
             )
 
     if st.session_state.new_debate:
