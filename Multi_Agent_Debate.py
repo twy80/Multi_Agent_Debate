@@ -23,7 +23,7 @@ from langchain.tools.retriever import create_retriever_tool
 from langchain.agents import create_openai_tools_agent
 # from langchain.agents import create_tool_calling_agent
 from langchain.agents import AgentExecutor
-from langchain.agents import load_tools
+from langchain_community.agent_toolkits.load_tools import load_tools
 from langchain.pydantic_v1 import BaseModel, Field
 
 
@@ -40,6 +40,9 @@ def initialize_session_state_variables() -> None:
 
     if "langchain_api_validity" not in st.session_state:
         st.session_state.langchain_api_validity = False
+
+    if "model" not in st.session_state:
+        st.session_state.model = "gpt-4o"
 
     if "language" not in st.session_state:
         st.session_state.language = "English"
@@ -420,7 +423,9 @@ def generate_agent_description(
             )
         ),
     ]
-    agent_specifier_llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=1.0)
+    agent_specifier_llm = ChatOpenAI(
+        model=st.session_state.model, temperature=1.0
+    )
     agent_description = agent_specifier_llm.invoke(agent_specifier_prompt)
 
     return agent_description.content
@@ -493,7 +498,7 @@ def get_participant_names(topic: str) -> List[str]:
             ),
         ]
         name_specifier_llm = ChatOpenAI(
-            model="gpt-3.5-turbo", temperature=1.0
+            model=st.session_state.model, temperature=1.0
         )
         participant_name = name_specifier_llm.invoke(
             name_specifier_prompt
@@ -618,6 +623,14 @@ def set_debate() -> None:
         index=1,
         horizontal=True
     )
+    st.write("**Model**")
+    st.session_state.model = st.radio(
+        label="Model",
+        options=("gpt-4o-mini", "gpt-4o"),
+        label_visibility="collapsed",
+        horizontal=True,
+        index=1,
+    )
 
     # Set the tools for the agents
     set_tools()
@@ -735,7 +748,7 @@ def set_debate() -> None:
                 ),
             ]
             topic_specifier_llm = ChatOpenAI(
-                model="gpt-3.5-turbo", temperature=1.0
+                model=st.session_state.model, temperature=1.0
             )
             st.session_state.specified_topic = topic_specifier_llm.invoke(
                 topic_specifier_prompt
@@ -889,9 +902,6 @@ def multi_agent_debate() -> None:
 
     # Initialize all the session state variables
     initialize_session_state_variables()
-
-    # LLM for the debate
-    st.session_state.model = "gpt-4o"
 
     with st.sidebar:
         st.write("")
