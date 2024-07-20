@@ -569,7 +569,6 @@ def set_tools() -> None:
         tool_options.insert(0, "Search")
         tool_dictionary["Search"] = bing_search
 
-    st.write("")
     st.write("**Tools**")
     st.session_state.selected_tools = st.multiselect(
         label="agent tools",
