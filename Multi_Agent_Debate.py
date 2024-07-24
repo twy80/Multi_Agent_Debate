@@ -922,7 +922,6 @@ def multi_agent_debate() -> None:
             openai_api_key = st.text_input(
                 label="$\\textsf{Your OPenAI API Key}$",
                 type="password",
-                placeholder="sk-",
                 on_change=check_api_keys,
                 label_visibility="collapsed",
             )
